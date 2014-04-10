@@ -1,5 +1,5 @@
-Installation process for ubuntu.
-================================
+Install process for ubuntu.
+===========================
 
 * Get the [data from yelp](http://www.yelp.com/dataset_challenge/) into `data/`
 

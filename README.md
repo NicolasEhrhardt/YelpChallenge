@@ -1,4 +1,4 @@
 Dataset and library install
 ===========================
 
-Please see INSTALL.txt
+Please see INSTALL.md
