@@ -8,6 +8,6 @@ Computing Features
 ==================
 
 
-        $ python features.py
+        $ python data_features.py
 
-        $ pypy TFIDF.py
+        $ pypy data_TFIDF.py
