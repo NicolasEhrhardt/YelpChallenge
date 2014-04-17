@@ -1,5 +1,5 @@
 # Tools 
-from persutils import data, disp
+from persutils import data
 from sgd import sgd;
 
 print "loading review scores"

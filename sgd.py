@@ -1,5 +1,4 @@
 from persutils import disp
-import numpy as np
 from collections import Counter
 import math
 
