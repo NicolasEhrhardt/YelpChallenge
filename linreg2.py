@@ -21,6 +21,7 @@ review_collection = db.yelp_academic_dataset_review
 # Starting learning
 trainRatio = .8
 n = review_collection.count()
+samplesize = 25000
 
 print "Total reviews:", n
 
@@ -32,7 +33,7 @@ alltoken = set()
 i = 0
 for review in review_collection.find():
   i += 1
-  if i == 1000: break
+  if i == samplesize: break
 
   disp.tempPrint(str(i))
 
@@ -45,6 +46,9 @@ for review in review_collection.find():
 
 train = DataFrame(reviews_feature).transpose().fillna(0)
 target = Series(reviews_score)
+
+data.saveFile(train, 'data/train.pkl')
+data.saveFile(target, 'data/targer.pkl')
 
 print len(alltoken)
 print target.shape
