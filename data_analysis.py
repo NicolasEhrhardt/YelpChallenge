@@ -27,9 +27,11 @@ samplesize = 50000
 print "Total reviews:", n
 print "Sample size:", samplesize
 
-reviews_feature = dict()
-reviews_score = dict()
+#reviews_feature = dict()
+#reviews_score = dict()
 alltoken = dict()
+ntoken = Counter()
+stars = Counter()
 
 # extracting tokens
 i = 0
@@ -41,10 +43,12 @@ for review in review_collection.find():
 
   text = nltk.tokenize.word_tokenize(review['text'])
   score = float(review['stars'])
-  
-  reviews_feature[review['review_id']] = Counter(text)
-  reviews_score[review['review_id']] = score
-  
+  stars[score] += 1
+
+  #reviews_feature[review['review_id']] = Counter(text)
+  #reviews_score[review['review_id']] = score
+  ntoken[len(text)] += 1
+
   for token in text:
     if token not in alltoken:
       alltoken[token] = Counter()
@@ -53,6 +57,11 @@ for review in review_collection.find():
 
 print "End of full scan"
 
-data.saveFile(alltoken, 'data/alltoken.pkl')
-data.saveFile(reviews_feature, 'data/reviews_feature.pkl')
-data.saveFile(reviews_score, 'data/reviews_score.pkl')
+tot = sum(stars.values())
+stars_norm = {k: float(stars[k]) / tot for k in stars}
+
+print "Stars distribution"
+print stars
+print stars_norm
+
+print "Token per review"
