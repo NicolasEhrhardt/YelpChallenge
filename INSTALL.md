@@ -1,8 +1,10 @@
 Install process for ubuntu.
 ===========================
 
+
 Import data
 -----------
+
 
 * Get the [data from yelp](http://www.yelp.com/dataset_challenge/) into `data/`
 
@@ -15,12 +17,9 @@ Import data
 * Install [MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/)
 
 
-* Import the data into Mongo (in the database "yelp")
-
-        $ mongoimport -d yelp yelp_academic_dataset_review.json
-
 Machine learn things
 --------------------
+
 
 * Install scipy
 
