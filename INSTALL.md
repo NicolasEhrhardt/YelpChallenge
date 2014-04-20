@@ -14,9 +14,6 @@ Import data
         $ tar xvf yelp_phoenix_academic_dataset.tgz
 
 
-* Install [MongoDB](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/)
-
-
 Machine learn things
 --------------------
 

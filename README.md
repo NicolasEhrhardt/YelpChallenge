@@ -12,11 +12,17 @@ Dataset
 
         $ sort -R yelp_academic_dataset_review.json > yelp_academic_dataset_review_randomize.json
         $ head --lines=-50000 yelp_academic_dataset_review_randomize.json > yelp_academic_dataset_review_training.json
-        $ tail --lines=50000 yelp_academic_dataset_review_randomize.json> yelp_academic_dataset_review_holdout.json
+        $ mkdir -p holdout
+        $ tail --lines=50000 yelp_academic_dataset_review_randomize.json > holdout/yelp_academic_dataset_review_holdout.json
 
-* Dataset ready, import data into Mongo (in the database "yelp") (add the ``--drop`` option for override existing collection)
 
-        $ mongoimport -d yelp yelp_academic_dataset_review_training.json
+Setup
+=====
+
+
+Before doing anything, update your python path:
+
+        $ export PYTHONPATH=$PYTHONPATH:$(pwd)
 
 
 Computing Features
