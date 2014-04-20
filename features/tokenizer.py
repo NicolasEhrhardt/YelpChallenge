@@ -137,7 +137,7 @@ amp = "&amp;"
 ######################################################################
 
 class Tokenizer:
-    def __init__(self, preserve_case=False):
+    def __init__(self, preserve_case=True):
         self.preserve_case = preserve_case
 
     def tokenize(self, s):
@@ -160,14 +160,14 @@ class Tokenizer:
             words = map((lambda x : x if emoticon_re.search(x) else x.lower()), words)
         return words
 
-    def ngrams(self, s, preserve_case=False, min_ngram, max_ngram):
-        tokens = self.tokenize(s, preserve_case)
+    def ngrams(self, s, min_ngram, max_ngram):
+        tokens = self.tokenize(s)
 
         result = list()
         n_tokens = len(tokens)
         for i in xrange(n_tokens):
             for j in xrange(i+min_ngram, min(n_tokens, i+max_ngram)+1):
-                result.append(tokens[i:j])
+                result.append(tuple(tokens[i:j]))
         
         return result
 
@@ -220,7 +220,7 @@ class Tokenizer:
 ###############################################################################
 
 if __name__ == '__main__':
-    tok = Tokenizer(preserve_case=False)
+    tok = Tokenizer(preserve_case=True)
     samples = (
         u"RT @ #happyfuncoding: this is a typical Twitter tweet :-)",
         u"HTML entities &amp; other Web oddities can be an &aacute;cute <em class='grumpy'>pain</em> >:(",
