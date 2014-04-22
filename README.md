@@ -1,9 +1,11 @@
 Dataset
 =======
 
-* Create datafolder
+* Create data folders
 
-        $ mkdir -p dataset computed
+        $ mkdir -p dataset computed saved
+
+``dataset`` will contain the raw data, ``computed`` the values computed from this dataset, ``saved`` values computed for other models.
 
 * Get the [data from yelp](http://www.yelp.com/dataset_challenge/) into `dataset/`
 
