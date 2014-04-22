@@ -1,6 +1,3 @@
-# System
-from os import path
-
 # Tools
 from utils import disp, data
 
@@ -11,7 +8,7 @@ from tokenizer import Tokenizer
 # storing data
 from collections import Counter
 
-root = path.dirname(path.dirname(path.abspath(__file__)))
+root = data.getParent(__file__)
 filename = root + "/dataset/yelp_academic_dataset_review_training_small.json"
 
 # Variables
@@ -50,13 +47,14 @@ print "> Prunning"
 releasedtoken = set(filter(lambda x: len(alltoken[x]) < hardthreshold, alltoken.keys()))
 print "Pruning", str(len(releasedtoken)), "tokens"
 
-for k in releasedtoken:
-  del alltoken[k]
+for token in releasedtoken:
+  del alltoken[token]
 
 for reviewid in reviews_feature:
-  for k in reviews_feature[reviewid]:
-    if k in releasedtoken:
-      reviews_feature[reviewid][k] = 0
+  tokens = list(reviews_feature[reviewid].keys())
+  for token in tokens:
+    if token in releasedtoken:
+      del reviews_feature[reviewid][token]
 print "> End prunning"
 
 

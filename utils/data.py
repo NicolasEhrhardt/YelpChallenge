@@ -1,5 +1,6 @@
 import disp
 import pickle
+from os import path
 
 # var to file
 def saveFile(variable, outputFile):
@@ -12,6 +13,9 @@ def loadFile(inputfile):
   if inputfile is not None:
     with open(inputfile, 'r') as inputFile:
       return pickle.load(inputFile)
+
+def getParent(filename):
+  return path.dirname(path.dirname(path.abspath(filename)))
 
 def generateLine(filename, verbose = True):
   num = 0

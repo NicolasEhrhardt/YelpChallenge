@@ -5,18 +5,20 @@ from utils import disp, data
 from collections import Counter
 from math import log
 
-print "Loading data"
+print "> Loading data"
 
-alltoken = data.loadFile('../computed/alltoken.pkl')
-reviews_feature = data.loadFile('../computed/reviews_feature.pkl')
-reviews_score = data.loadFile('../computed/reviews_score.pkl')
+root = data.getParent(__file__)
+
+alltoken = data.loadFile(root + '/computed/alltoken.pkl')
+reviews_feature = data.loadFile(root + '/computed/reviews_feature.pkl')
+reviews_score = data.loadFile(root + '/computed/reviews_score.pkl')
 
 n = len(reviews_score)
 
 print "Total reviews:", n
 
 # TF-IDF
-print "Computing TF"
+print "> Computing TF"
 TF = dict()
 i = 0
 for review in reviews_feature:
@@ -26,7 +28,7 @@ for review in reviews_feature:
   for token in reviews_feature[review]:
     TF[review][token] = float(reviews_feature[review][token]) / float(max(reviews_feature[review].values()))
 
-print "Computing IDF"
+print "> Computing IDF"
 IDF = dict()
 i = 0
 for token in alltoken:
@@ -34,7 +36,7 @@ for token in alltoken:
   disp.tempPrint(str(i))
   IDF[token] = log(float(n) / float(len(alltoken[token])))
 
-print "Computing TFIDF"
+print "> Computing TFIDF"
 TFIDF = dict()
 i = 0
 for review in reviews_feature:
@@ -46,4 +48,4 @@ for review in reviews_feature:
 
 # SGD linear regression
 
-data.saveFile(TFIDF, '../computed/TFIDF.pkl')
+data.saveFile(TFIDF, root + '/computed/TFIDF.pkl')

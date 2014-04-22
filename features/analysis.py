@@ -11,7 +11,8 @@ from collections import Counter
 # Display tools
 from matplotlib import pyplot as plt
 
-filename = "../dataset/yelp_academic_dataset_review_sample.json"
+root = data.getParent(__file__)
+filename = root + "/dataset/yelp_academic_dataset_review_sample.json"
 print "Loading data", filename
 
 alltoken = dict()

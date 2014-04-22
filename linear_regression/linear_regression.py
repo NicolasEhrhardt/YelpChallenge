@@ -2,10 +2,11 @@
 from utils import data
 from linear_regression_sgd import sgd
 
+root = data.getParent(__file__)
 print "loading review scores"
-target = data.loadFile('../computed/reviews_score.pkl')
+target = data.loadFile(root + '/computed/reviews_score.pkl')
 print "loading TFIDF matrix"
-TFIDF = data.loadFile('../computed/TFIDF.pkl')
+TFIDF = data.loadFile(root + '/computed/TFIDF.pkl')
 
 nReviews = len(target)
 
