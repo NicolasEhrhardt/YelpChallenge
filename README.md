@@ -16,8 +16,8 @@ Dataset
 
         $ sort -R yelp_academic_dataset_review.json > yelp_academic_dataset_review_randomize.json
         $ head --lines=-50000 yelp_academic_dataset_review_randomize.json > yelp_academic_dataset_review_training.json
-        $ head --lines=50000 yelp_academic_dataset_review_training.json > yelp_academic_dataset_review_small.json
-        $ head --lines=5000 yelp_academic_dataset_review_training.json > yelp_academic_dataset_review_sample.json
+        $ head --lines=50000 yelp_academic_dataset_review_training.json > yelp_academic_dataset_review_training_small.json
+        $ head --lines=5000 yelp_academic_dataset_review_training.json > yelp_academic_dataset_review_training_sample.json
         $ mkdir -p holdout
         $ tail --lines=50000 yelp_academic_dataset_review_randomize.json > holdout/yelp_academic_dataset_review_holdout.json
 
