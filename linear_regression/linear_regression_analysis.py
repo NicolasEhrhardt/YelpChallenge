@@ -8,4 +8,4 @@ print "Optimizing with SGD"
 for alpha in alphas: 
   print "Alpha = ", alpha
   weights, bias = data.loadFile(root + "/computed/linear_regression_weights_alpha_" + str(alpha) + ".pkl")
-  print "\n".join(map(lambda t: str(t[1]) + " - " + t[0], weights.most_common(100)))
+  print "\n".join(map(lambda t: str(t[1]) + " - " + str(t[0]), weights.most_common(100)))
