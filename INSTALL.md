@@ -1,19 +1,6 @@
 Install process for ubuntu.
 ===========================
 
-
-Import data
------------
-
-
-* Get the [data from yelp](http://www.yelp.com/dataset_challenge/) into `data/`
-
-
-* Untar the data
-
-        $ tar xvf yelp_phoenix_academic_dataset.tgz
-
-
 Machine learn things
 --------------------
 
