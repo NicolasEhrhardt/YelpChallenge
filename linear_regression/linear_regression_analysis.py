@@ -1,5 +1,5 @@
 # Tools 
-from persutils import data
+from utils import data
 
 root = data.getParent(__file__)
 alphas = [0.001]#, 0.01, 0.1]
