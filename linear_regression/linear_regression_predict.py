@@ -13,7 +13,7 @@ root = data.getParent(__file__)
 print "loading TFIDF matrix"
 TFIDF = data.loadFile(root + '/computed/TFIDF.pkl')
 print "loading weights"
-weights, bias = data.loadFile(root + "/computed/linear_regression_weights_alpha_0.001.pkl")
+weights, bias = data.loadFile(root + "/computed/linear_regression_weights.pkl")
 
 predict = dict()
 for review in TFIDF:
