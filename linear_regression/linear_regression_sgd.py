@@ -9,12 +9,13 @@ def dot(csparse, c):
     r += csparse[key] * c[key]
   return r
 
-def sgd(TFIDF, target, alpha=0.04, epsilon=0.01, alapcoeff=.01, nIterations=1000):
+def sgd(TFIDF, target, alpha=0.04, epsilon=0.01, alapcoeff=.01, nIter=1000):
   weights = Counter()
 
   # parameters 
   iIter = 0
   bias = 0
+  alphainit = alpha
 
   # variables
   RMSE = 2 * epsilon
@@ -23,7 +24,7 @@ def sgd(TFIDF, target, alpha=0.04, epsilon=0.01, alapcoeff=.01, nIterations=1000
   #delta_weights = Counter()
   #delta_bias = 0
 
-  while iIter < nIterations:
+  while iIter < nIter:
     print "Iter", iIter
 
     # Update weights 
@@ -71,9 +72,9 @@ def sgd(TFIDF, target, alpha=0.04, epsilon=0.01, alapcoeff=.01, nIterations=1000
     if first:
       first = False
     else:
-      alpha = alpha * (1 - abs(RMSE - RMSE_old) / RMSE)
+      alpha = alphainit / math.sqrt(iIter)
 
-    print '[',iIter,']'," - Error = ", RMSE    
+    print '[',iIter,']'," - Error =", RMSE, "- Alpha =", alpha
     
     if abs(RMSE_old - RMSE) < epsilon:
       break
