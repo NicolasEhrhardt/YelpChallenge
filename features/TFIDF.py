@@ -11,9 +11,8 @@ root = data.getParent(__file__)
 
 alltoken = data.loadFile(root + '/computed/alltoken.pkl')
 reviews_feature = data.loadFile(root + '/computed/reviews_feature.pkl')
-reviews_score = data.loadFile(root + '/computed/reviews_score.pkl')
 
-n = len(reviews_score)
+n = len(reviews_feature)
 
 print "Total reviews:", n
 
