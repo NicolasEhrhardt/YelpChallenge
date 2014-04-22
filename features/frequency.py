@@ -1,3 +1,5 @@
+import sys
+
 # Tools
 from utils import disp, data
 
@@ -9,7 +11,8 @@ from tokenizer import Tokenizer
 from collections import Counter
 
 root = data.getParent(__file__)
-filename = root + "/dataset/yelp_academic_dataset_review_training_small.json"
+#filename = root + "/dataset/yelp_academic_dataset_review_training_small.json"
+filename = sys.argv[1]
 
 # Variables
 
