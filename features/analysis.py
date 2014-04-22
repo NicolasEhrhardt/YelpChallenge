@@ -12,7 +12,7 @@ from collections import Counter
 from matplotlib import pyplot as plt
 
 root = data.getParent(__file__)
-filename = root + "/dataset/yelp_academic_dataset_review_sample.json"
+filename = root + "/dataset/yelp_academic_dataset_review_training_sample.json"
 print "Loading data", filename
 
 alltoken = dict()

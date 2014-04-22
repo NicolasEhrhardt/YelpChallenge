@@ -1,5 +1,6 @@
 # Tools 
 from utils import data
+import evaluation
 
 root = data.getParent(__file__)
 alphas = [0.001]#, 0.01, 0.1]

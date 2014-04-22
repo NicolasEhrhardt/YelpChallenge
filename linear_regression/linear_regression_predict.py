@@ -1,5 +1,6 @@
 # Tools 
 from utils import data
+from collections import Counter
 
 def dot(csparse, c):
   r = 0
@@ -9,20 +10,13 @@ def dot(csparse, c):
 
 print "> Loading"
 root = data.getParent(__file__)
-print "loading review scores"
-target = data.loadFile(root + '/computed/reviews_score.pkl')
 print "loading TFIDF matrix"
 TFIDF = data.loadFile(root + '/computed/TFIDF.pkl')
+print "loading weights"
+weights, bias = data.loadFile(root + "/computed/linear_regression_weights_alpha_0.001.pkl")
 
-alphas = [0.001]#, 0.01, 0.1]
+predict = dict()
+for review in TFIDF:
+  predict[review] = bias + dot(TFIDF[review], weights)
 
-print "Optimizing with SGD"
-for alpha in alphas: 
-  print "Alpha = ", alpha
-  weights, bias = data.loadFile(root + "/computed/linear_regression_weights_alpha_" + str(alpha) + ".pkl")
-
-  predict = dict()
-  for review in TFIDF:
-    predict[review] = bias + dot(TFIDF[review], weights)
-
-  data.saveFile(root + "/computed/linear_regression_predict.pkl")
+data.saveFile(predict, root + "/computed/linear_regression_predict.pkl")
