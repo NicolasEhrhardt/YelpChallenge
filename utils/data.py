@@ -24,4 +24,3 @@ def generateLine(filename, verbose = True):
       disp.tempPrint(str(num))
       num += 1
       yield line
-

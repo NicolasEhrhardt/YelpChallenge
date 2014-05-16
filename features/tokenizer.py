@@ -160,15 +160,18 @@ class Tokenizer:
             words = map((lambda x : x if emoticon_re.search(x) else x.lower()), words)
         return words
 
-    def ngrams(self, s, min_ngram, max_ngram):
+    def ngrams(self, s, min_ngram, max_ngram, string=False):
         tokens = self.tokenize(s)
 
         result = list()
         n_tokens = len(tokens)
         for i in xrange(n_tokens):
             for j in xrange(i+min_ngram, min(n_tokens, i+max_ngram)+1):
-                result.append(tuple(tokens[i:j]))
-        
+                if not string:
+                  result.append(tuple(tokens[i:j]))
+                else:
+                  result.append(" ".join(tokens[i:j]))
+
         return result
 
     def tokenize_random_tweet(self):
