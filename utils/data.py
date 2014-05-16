@@ -1,17 +1,18 @@
 import disp
-import pickle
+import cPickle as pickle
+import gzip
 from os import path
 
 # var to file
-def saveFile(variable, outputFile):
+def save(variable, outputFile):
   print "Saving in file: " + outputFile
-  with open(outputFile, 'wb') as output:
+  with gzip.open(outputFile, 'wb') as output:
     pickle.dump(variable, output, pickle.HIGHEST_PROTOCOL)
 
 # file to var
-def loadFile(inputfile):
+def load(inputfile):
   if inputfile is not None:
-    with open(inputfile, 'r') as inputFile:
+    with gzip.open(inputfile, 'r') as inputFile:
       return pickle.load(inputFile)
 
 def getParent(filename):

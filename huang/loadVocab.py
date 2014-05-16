@@ -90,13 +90,14 @@ wordreps = io.loadmat(wordrep_filename)
 prototypes = wordreps['oWe']
 corpus_train_tfidf = tfidf_model[corpus_train]
 
-print "> Creating training input"
+print "> Get document vectors"
 X_train = []
 Y_train = []
 X_test = []
 Y_test = []
-rratings = []
 leftout = []
+
+print "- training set"
 i = 0
 for tokens, stars in generateExample(dataset_train_filename):
   i += 1
@@ -112,6 +113,8 @@ for tokens, stars in generateExample(dataset_train_filename):
   X_train.append([doc_proto])
   Y_train.append(stars)
 
+print "- test set"
+i = 0
 for tokens, stars in generateExample(dataset_test_filename):
   i += 1
   disp.tempPrint(str(i))
@@ -125,8 +128,34 @@ for tokens, stars in generateExample(dataset_test_filename):
   assert(len(doc_proto) == 50)
   X_test.append([doc_proto])
   Y_test.append(stars)
+print "< Document vectors loaded"
 
-
+print "> Create training set"
 X_train = np.concatenate(X_train, axis=0)
+Y_train = np.array(Y_train)
+assert(X_train.shape[0] == len(Y_train))
+
+print "> Create test set"
 X_test = np.concatenate(X_test, axis=0)
-np.save("/tmp/yelp-huang-training.npz", (X_train, Y_train, X_test, Y_test))
+Y_test = np.array(Y_test)
+assert(X_test.shape[0] == len(Y_test))
+
+permut = np.random.permutation(len(Y_test))
+print "- Create valid subet"
+X_valid = X_test[permut[::len(permut)/2], :]
+Y_valid = Y_test[permut[::len(permut)/2]]
+assert(X_valid.shape[0] == len(Y_valid))
+
+print "- Create test subet"
+X_test = X_test[permut[len(permut)/2::], :]
+Y_test = Y_test[permut[len(permut)/2::]]
+assert(X_test.shape[0] == len(Y_test))
+print "< Test sets created"
+
+
+data.save((
+    (X_train, Y_train), 
+    (X_test, Y_test),
+    (X_test, Y_test),
+), "data.pkl.gz"
+)
