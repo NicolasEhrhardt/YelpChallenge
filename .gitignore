@@ -2,4 +2,6 @@ dataset/
 computed/
 saved/
 *.pyc
+*.pkl
+*.pkl.gz
 *.swp
