@@ -3,19 +3,26 @@ from matplotlib import pyplot as plt
 from collections import Counter
 import numpy as np
 
-"""
-Function : error_boxplot
-------------------------
-    This function plots a boxplot of the error between the result and the target. You can specify some parameters for the plot.
-    @param : 
-    - target is a dictionnary of (ReviewID,Rating) pairs
-    - result is a dictionnary of (ReviewID,PredictedRating) pairs
-    - nclasses is the total number of different values taken by Ratings in the different entries of target ( DEFAULT = 5)
-    - axis_argv is a list of parameters for the plot (axis_argv[0] -> title, axis_argv[1] -> xlabel, axis_argv[2] ->ylabel)
-    - save_as specifies the file in which the figure should be saved. Do not provided this argument if you just want to plot the result.
-"""
-def error_boxplot(target, result, nclasses=5, axis_argv=['Error','Stars','Error'], save_as=''):
 
+def error_boxplot(target, result, nclasses=5, axis_argv=['Error','Stars','Error'], save_as=''):
+  """
+  Plots a boxplot of the error between the result and the target.
+  
+  :type target: dict(ReviewID: Rating)
+  :param target: is a dictionnary of (ReviewID,Rating) pairs
+
+  :type result: dict(ReviewID: Rating)
+  :param result: dictionnary of (ReviewID,PredictedRating) pairs
+  
+  :type nclasses: int
+  :param nclasses: total number of different values taken by Ratings in the different entries of target ( DEFAULT = 5)
+  
+  :type axis_argv: list(String)
+  :param axis_argv: list of parameters for the plot (axis_argv[0] -> title, axis_argv[1] -> xlabel, axis_argv[2] ->ylabel)
+  
+  :type save_as: string
+  :param save_as: file in which the figure should be saved. Leave empty if you just want to plot the result.
+  """
   error = [ [] for i in range(nclasses) ] 
 
   # Computing the error
@@ -40,7 +47,26 @@ def error_boxplot(target, result, nclasses=5, axis_argv=['Error','Stars','Error'
 
 
 def error_classification_matrix(target, result, nclasses=5, save_as=''):
+  """
+  Plots a confustion matrix between the result and the target. Assumes that the labels are int starting from 0.
+
+  :type target: list[int]
+  :param target: list of correct labels
+
+  :type result: list[int]
+  :param result: list of predicted labels
+
+  :type nclasses: int
+  :param target: number of different labels (default 5)
+
+  :type save_as: string
+  :param save_as: file in which the figure should be saved. Leave empty if you just want to plot the result.
+  """
+
+  # Sanity checks 
   assert(len(target) == len(result))
+  
+  # Building confusiong matrix
   values = zip(target, result)
   freq = Counter(values)
   freq_mat = np.zeros((nclasses,nclasses))
@@ -50,13 +76,14 @@ def error_classification_matrix(target, result, nclasses=5, save_as=''):
   colsum = freq_mat.sum(axis=1)
   confusion_mat = np.divide(freq_mat, colsum[:, np.newaxis])
 
-
+  # Plot heat map
   fig = plt.figure()
   plt.clf()
   ax = fig.add_subplot(111)
   ax.set_aspect(1)
   res = ax.imshow(confusion_mat, cmap=plt.cm.jet, interpolation='nearest')
   
+  # Plot frequencies
   for x in xrange(nclasses):
     for y in xrange(nclasses):
       ax.annotate(
@@ -66,6 +93,7 @@ def error_classification_matrix(target, result, nclasses=5, save_as=''):
         verticalalignment='center',
       )
  
+  # Plot colorbar
   cb = fig.colorbar(res) 
   plt.xticks(range(nclasses), range(nclasses))
   plt.xlabel('Predicted')
