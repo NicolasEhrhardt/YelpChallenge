@@ -94,7 +94,7 @@ def error_classification_matrix(target, result, nclasses=5, save_as=''):
       )
  
   # Plot colorbar
-  cb = fig.colorbar(res) 
+  fig.colorbar(res) 
   plt.xticks(range(nclasses), range(nclasses))
   plt.xlabel('Predicted')
   plt.ylabel('Target')
@@ -105,5 +105,3 @@ def error_classification_matrix(target, result, nclasses=5, save_as=''):
     plt.show()
   else :
     fig.savefig(save_as)
-
-
