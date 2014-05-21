@@ -153,6 +153,7 @@ class Tokenizer:
             s = unicode(s)
         # Fix HTML character entitites:
         s = self.__html2unicode(s)
+        s = self.__reduce_length(s)
         # Tokenize:
         words = word_re.findall(s)
         # Possible alter the case, but avoid changing emoticons like :D into :d:
@@ -193,6 +194,11 @@ class Tokenizer:
         else:
             raise Exception("Apologies. I couldn't get Twitter to give me a public English-language tweet. Perhaps try again")
 
+    def __reduce_length(self, s):
+        lengthy = re.compile(r"(.)\1{2,}")
+        s = lengthy.sub(r"\1\1\1", s)
+        return s
+
     def __html2unicode(self, s):
         """
         Internal metod that seeks to replace all the HTML entities in
@@ -228,7 +234,8 @@ if __name__ == '__main__':
         u"RT @ #happyfuncoding: this is a typical Twitter tweet :-)",
         u"HTML entities &amp; other Web oddities can be an &aacute;cute <em class='grumpy'>pain</em> >:(",
         u"HTML entities &amp; other Web oddities. This is a test. it can be an &aacute;cute <em class='grumpy'>pain</em> >:(",
-        u"It's perhaps noteworthy that phone numbers like +1 (800) 123-4567, (800) 123-4567, and 123-4567 are treated as words despite their whitespace."
+        u"It's perhaps noteworthy that phone numbers like +1 (800) 123-4567, (800) 123-4567, and 123-4567 are treated as words despite their whitespace.",
+        u"Waiiiiiiit a second!"
         )
 
     for s in samples:
