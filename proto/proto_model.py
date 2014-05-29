@@ -15,7 +15,7 @@ import numpy as np
 root = data.getParent(__file__)
 
 # huang data to be found on Huang website
-wordrep_filename = root + "/huang/savedParams/wordreps_orig_iter190000.mat"
+wordrep_filename = root + "/huang/kept/prototypes_yelptraining.mat"
 
 # yelp data
 dataset_train_filename = root + "/dataset/yelp_academic_dataset_review_training.json"
