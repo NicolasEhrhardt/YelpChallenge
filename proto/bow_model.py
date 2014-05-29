@@ -16,7 +16,7 @@ from gensim.models import tfidfmodel
 root = data.getParent(__file__)
 
 # huang data to be found on Huang website
-vocab_filename = root + "/huang/trainEmb/data/vocab.mat"
+vocab_filename = root + "/huang/data/vocab.mat"
 
 # yelp data
 dataset_train_filename = root + "/dataset/yelp_academic_dataset_review_training.json"
