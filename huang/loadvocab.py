@@ -1,8 +1,6 @@
-import sys
-
 # Tools
 from utils import disp, data
-from copy import copy, deepcopy
+from copy import deepcopy
 
 # vector lib
 from scipy import io
@@ -10,16 +8,19 @@ from scipy import io
 # parsing
 import json
 from utils.tokenizer import Tokenizer
-from gensim import corpora, models
+from gensim import corpora
+from gensim.models import tfidfmodel
+import numpy as np
+
 
 root = data.getParent(__file__)
 
 # huang data to be found on Huang website
-vocab_filename = root + "/dataset/huang/vocab.mat"
-wordrep_filename = root + "/dataset/huang/wordreps_orig.mat"
+vocab_filename = root + "/huang/trainEmb/data/vocab.mat"
+wordrep_filename = root + "/huang/trainEmb/savedParams/wordreps_orig_iter190000.mat"
 
 # yelp data
-dataset_train_filename = root + "/dataset/yelp_academic_dataset_review_training_sample.json"
+dataset_train_filename = root + "/dataset/yelp_academic_dataset_review_training.json"
 dataset_holdout_filename = root + "/dataset/holdout/yelp_academic_dataset_review_holdout.json"
 
 # Variables
@@ -31,10 +32,6 @@ token2id_init = deepcopy(token2id)
 dfs = {k:0 for k in xrange(len(vocab))}
 
 # number of reviews a token has to appear to be kept
-hardthreshold = 2
-
-reviews_score = dict()
-dictionary_train = corpora.Dictionary()
 tok = Tokenizer(preserve_case=False)
 
 def generateExample(filename):
@@ -82,15 +79,17 @@ print "> Creating corpus_train structure"
 corpus_train = Corpus(dictionary_train, generateReview, dataset_train_filename)
 corpora.MmCorpus.serialize('/tmp/yelp-huang-corpus_train.mm', corpus_train)
 
-from operator import itemgetter
-
-from gensim.models import tfidfmodel
-import numpy as np
-
 print "> Computing tfidf"
-tfidf_model = tfidfmodel.TfidfModel(corpus_train, normalize=True)
+def unitvec(vec):
+  length = 1.0 * sum(val for _, val in vec)
+  if length != 1.0:
+    return [(termid, val / length) for termid, val in vec]
+  else:
+    return list(vec)
+
+tfidf_model = tfidfmodel.TfidfModel(corpus_train, normalize=unitvec)
 wordreps = io.loadmat(wordrep_filename)
-prototypes = wordreps['oWe']
+prototypes = wordreps['We']
 corpus_train_tfidf = tfidf_model[corpus_train]
 
 print "> Get document vectors"
@@ -109,7 +108,7 @@ for tokens, stars in generateExample(dataset_train_filename):
   if not len(doc_tfidf):
     leftout.append(i)
     continue
-
+  
   tokenids, weights = zip(*doc_tfidf)
   # weight are already normalized at this point
 
@@ -166,9 +165,9 @@ assert(X_test.shape[0] == len(Y_test))
 print "< Test sets created"
 
 
-#data.save((
-#    (X_train, Y_train), 
-#    (X_valid, Y_valid),
-#    (X_test, Y_test),
-#), "data.pkl.gz"
-#)
+data.save((
+    (X_train, Y_train), 
+    (X_valid, Y_valid),
+    (X_test, Y_test),
+), "data.pkl.gz"
+)

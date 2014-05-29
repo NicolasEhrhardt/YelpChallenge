@@ -115,7 +115,7 @@ regex_strings = (
     |
     (?:[\w_]+)                     # Words without apostrophes or dashes.
     |
-    (?:\.(?:\s*\.){1,})            # Ellipsis dots. 
+    (?:\.{1,})                     # Ellipsis dots. was removed
     |
     (?:\S)                         # Everything else that isn't whitespace.
     """
@@ -128,6 +128,8 @@ word_re = re.compile(r"""(%s)""" % "|".join(regex_strings), re.VERBOSE | re.I | 
 
 # The emoticon string gets its own regex so that we can preserve case for them as needed:
 emoticon_re = re.compile(regex_strings[1], re.VERBOSE | re.I | re.UNICODE)
+repetition_char_re = re.compile(r"(.)\1{3,}")
+repetition_substring_re = re.compile(r"(.+)\1{3,}")
 
 # These are for regularizing HTML entities to Unicode:
 html_entity_digit_re = re.compile(r"&#\d+;")
@@ -195,8 +197,8 @@ class Tokenizer:
             raise Exception("Apologies. I couldn't get Twitter to give me a public English-language tweet. Perhaps try again")
 
     def __reduce_length(self, s):
-        lengthy = re.compile(r"(.)\1{2,}")
-        s = lengthy.sub(r"\1\1\1", s)
+        s = repetition_char_re.sub(r"\1\1\1", s)
+        #s = repetition_substring_re.sub(r"\1\1\1", s)
         return s
 
     def __html2unicode(self, s):
