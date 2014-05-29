@@ -1,6 +1,10 @@
 dataset/
 computed/
 saved/
+
+data*
+saved*
+
 *.pyc
 *.pkl
 *.pkl.gz
