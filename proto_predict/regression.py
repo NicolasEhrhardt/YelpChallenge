@@ -21,6 +21,7 @@ X_valid, Y_valid = valid
 X_test, Y_test = test
 
 net = buildNetwork(50, 50, 1, bias=True, hiddenclass=TanhLayer, fast=True)
+# fast requires arac which is a pain in the butt to install but doable
 
 def createDataset(X, Y):
   ds = SupervisedDataSet(50, 1)
