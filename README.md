@@ -22,6 +22,7 @@ Dataset
         $ head --lines=5000 yelp_academic_dataset_review_training.json > yelp_academic_dataset_review_training_sample.json
         $ mkdir -p holdout
         $ tail --lines=50000 yelp_academic_dataset_review_randomize.json > holdout/yelp_academic_dataset_review_holdout.json
+        $ tail --lines=5000 yelp_academic_dataset_review_randomize.json > holdout/yelp_academic_dataset_review_holdout_small.json
 
 Setup
 =====
@@ -30,21 +31,15 @@ Before doing anything, update your python path:
 
         $ export PYTHONPATH=$PYTHONPATH:$(pwd)
 
-Computing Features
-==================
+Folders used
+============
 
+- ``huang`` : train Huang's word vectors on dataset
+- ``sLDA`` : assess accuracy of sLDA model
+- ``proto`` : uses Huang's prototype to build a regression model
+- ``utils`` : contains helpers used in the python scripts
 
-        $ pypy features/frequency.py
-        
-        $ pypy features/TFIDF.py
+Computed data
+=============
 
-
-Machine learning
-================
-
-Linear regression
------------------
-
-        $ pypy linear_regression/linear_regression.py
-
-        $ pypy linear_regression/linear_regression_analysis.py
+We tried to implement it so that most computed data go into ``computed``. The utils script ``loadcomputed`` and ``savecomputed`` are to be used to save these data in separate folders depending on the type of analysis you are running. Save your work!
