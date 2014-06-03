@@ -1,0 +1,33 @@
+us | . | , | time | minutes | order | service | wait | back | table
+, | . | store | find | it's | like | one | shop | selection | get
+! | ... | love | amazing | awesome | .... | best | :) | oh | place
+, | pizza | ( | ) | cheese | fresh | crust | bread | sauce | one
+great | . | food | service | place | always | friendly | staff | good | best
+burger | , | fries | . | burgers | hair | time | get | dr | cut
+, | bar | place | . | it's | drinks | night | atmosphere | patio | great
+breakfast | & | , | . | eggs | menu | morning | good | bacon | egg
+. | , | room | parking | nice | area | one | hotel | it's | around
+, | . | food | chicken | rice | ( | ) | dishes | restaurant | soup
+, | . | mexican | chips | salsa | tacos | food | beans | good | (
+- | " | ) | ( | : | ? | / | ' | 1 | yes
+.. | ! | get | ever | day | know | never | back | time | could
+, | . | coffee | cream | ice | chocolate | one | tea | like | get
+$ | happy | hour | ) | ( | beer | 2 | sushi | 5 | 3
+. | , | would | car | customer | / | called | back | * | $
+like | . | good | don't | really | place | ... | food | go | would
+. | salad | chicken | , | good | sandwich | cheese | lunch | sauce | bread
+. | dinner | ordered | restaurant | back | meal | night | menu | us | went
+, | visit | . | new | experience | many | phoenix | first | dog | local
+
+\hline
+    & \centering Topic \#6 
+    & \centering Topic \#7 
+    & \centering Topic \#8 
+    & \centering Topic \#9 
+    & \centering Topic \#10\\
+\midrule    
+    & \centering burger $|$ , $|$ fries $|$ . $|$ burgers $|$ hair $|$ time $|$ get $|$ dr $|$ cut 
+    & \centering , $|$ bar $|$ place $|$ . $|$ it's $|$ drinks $|$ night $|$ atmosphere $|$ patio $|$ great
+    & \centering breakfast $|$ & $|$ , $|$ . $|$ eggs $|$ menu $|$ morning $|$ good $|$ bacon $|$ egg
+    & \centering . $|$ , $|$ room $|$ parking $|$ nice $|$ area $|$ one $|$ hotel $|$ it's $|$ around
+    & \centering , $|$ . $|$ food $|$ chicken $|$ rice $|$ ( $|$ ) $|$ dishes $|$ restaurant $|$ soup \\

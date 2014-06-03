@@ -1,2 +1,2 @@
 #!/bin/bash
-./slda est ../generate_data/slda_data_train.txt ../generate_data/slda_label_train.txt settings.txt 0.01 20 random ../slda_model
+./slda est /tmp/slda_data_train_pizza.txt /tmp/slda_label_train_pizza.txt settings.txt 0.01 20 random /tmp/slda_pizza_model

@@ -1,4 +1,6 @@
 from sklearn import linear_model
+from sklearn.metrics import mean_squared_error
+from sklearn.ensemble import  *
 import numpy as np
 from evaluation import plot
 from utils import data
@@ -22,6 +24,7 @@ def linear_regression(x_train,y_train,x_test,y_test,axis,figname):
     plot.error_boxplot( dict_test, dict_pred, 5, axis, figname);
     
     return RMSE
+   
 
 
 """
@@ -33,16 +36,14 @@ slda_y_train = np.genfromtxt("slda_y_train.txt", delimiter=" ");
 slda_x_test = np.genfromtxt("slda_x_test.txt", delimiter=" ");
 slda_y_test = np.genfromtxt("slda_y_test.txt", delimiter=" ");
 
-"""
 slda_RMSE = linear_regression(slda_x_train,
                                 slda_y_train,
                                 slda_x_test,
                                 slda_y_test,
-                                ["sLDA - LinReg","Rating","Error"],
+                                ["sLDA - Regression","Rating","Error"],
                                 "slda_linReg_error.eps");
 
 print "SLDA - RMSE : %1.4e" %slda_RMSE
-"""
 
 
 """
@@ -75,7 +76,7 @@ lda_RMSE =  linear_regression(lda_x_train,
                                 lda_y_train,
                                 lda_x_test,
                                 lda_y_test,
-                                ["LDA - LinReg","Rating","Error"],
+                                ["LDA - Regression","Rating","Error"],
                                 "lda_linReg_error.eps");
 
 print "LDA - RMSE : %1.4e" %lda_RMSE;
