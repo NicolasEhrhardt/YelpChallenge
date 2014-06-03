@@ -21,11 +21,11 @@ wordrep_filename = root + "/huang/kept/prototypes_yelptraining.mat"
 dataset_train_filename = root + "/dataset/yelp_academic_dataset_review_training.json"
 dataset_holdout_filename = root + "/dataset/holdout/yelp_academic_dataset_review_holdout.json"
 
-corpus_filename = '/tmp/yelp_proto_corpustrain.mm'
-dict_filename = '/tmp/yelp_proto_corpustrain.dict'
-tfidf_filename = '/tmp/yelp_proto_tfidf.model'
-weights_filename = '/tmp/yelp_proto_weights.counter'
-training_filename = root + '/computed/prototypes.pkl.gz'
+corpus_filename = root + '/computed/corpustrain.mm'
+dict_filename = root + '/computed/corpustrain.dict'
+tfidf_filename = root + '/computed/tfidf.model'
+weights_filename = root + '/computed/proto_tfidf_weights.counter'
+training_filename = root + '/computed/prototypes_tfidf.pkl.gz'
 
 corpus_train = corpora.MmCorpus(corpus_filename)
 dictionary_train = corpora.Dictionary.load(dict_filename)

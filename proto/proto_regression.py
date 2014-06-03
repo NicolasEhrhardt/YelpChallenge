@@ -12,7 +12,7 @@ import numpy as np
 
 root = data.getParent(__file__)
 
-training_filename = root + '/computed/prototypes.pkl.gz'
+training_filename = root + '/computed/prototypes_tfidf.pkl.gz'
 
 train, valid, test = data.load(training_filename)
 
