@@ -12,7 +12,7 @@ import numpy as np
 
 root = data.getParent(__file__)
 
-training_filename = root + '/computed/prototypes_tfidf.pkl.gz'
+training_filename = root + '/computed/prototypes_regul_tfidf.pkl.gz'
 
 train, valid, test = data.load(training_filename)
 
@@ -89,3 +89,10 @@ print(trainer.testOnData(testData))
 
 # hit this command if you want to save the weights:
 # data.save(bestweights, root + 'computed/bestweights.plk.gz')
+predict = np.array([net.activate(x) for x, _ in testData])
+
+from evaluation import error_boxplot
+error_boxplot(
+  {i: Y_test[i] for i in xrange(len(Y_test))},
+  {i: predict[i] for i in xrange(len(predict))},
+)

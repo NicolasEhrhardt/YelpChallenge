@@ -23,9 +23,9 @@ dataset_train_filename = root + '/dataset/yelp_academic_dataset_review_training.
 corpus_filename = root + '/computed/corpustrain.mm'
 dict_filename = root + '/computed/corpustrain.dict'
 tfidf_filename = root + '/computed/tfidf.model'
-lin_reg_filename = root + '/computed/proto_tfidf_lin_reg.model'
-weights_filename = root + '/computed/proto_tfidf_weights.counter'
-file_csr_train = root + '/computed/proto_tfidf_csrtrain.csr'
+lin_reg_filename = root + '/computed/proto_tfidf_regul_lin_reg.model'
+weights_filename = root + '/computed/proto_tfidf_regul_weights.counter'
+file_csr_train = root + '/computed/proto_tfidf_regul_csrtrain.csr'
 
 print('> Load data')
 corpus_train = corpora.MmCorpus(corpus_filename)
@@ -112,10 +112,10 @@ print('> Fitting the model ')
 alpha_opt_word_freq = 70.
 lin_reg_model = linear_model.SGDRegressor(
   eta0=0.04, # starting learning rate
-  n_iter=1000, # max number of epochs
+  n_iter=300, # max number of epochs
   shuffle=True, 
-  verbose=1, 
-  alpha=0, # regularization constant
+  verbose=0, 
+  alpha=0.000001, # regularization constant
 );
 
 lin_reg_model.fit(X_train, Y_train)

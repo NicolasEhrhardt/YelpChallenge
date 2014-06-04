@@ -24,8 +24,8 @@ dataset_holdout_filename = root + "/dataset/holdout/yelp_academic_dataset_review
 corpus_filename = root + '/computed/corpustrain.mm'
 dict_filename = root + '/computed/corpustrain.dict'
 tfidf_filename = root + '/computed/tfidf.model'
-weights_filename = root + '/computed/proto_tfidf_weights.counter'
-training_filename = root + '/computed/prototypes_tfidf.pkl.gz'
+weights_filename = root + '/computed/proto_tfidf_regul_weights.counter'
+training_filename = root + '/computed/prototypes_regul_tfidf.pkl.gz'
 
 corpus_train = corpora.MmCorpus(corpus_filename)
 dictionary_train = corpora.Dictionary.load(dict_filename)
