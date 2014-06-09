@@ -3,48 +3,17 @@ from matplotlib import pyplot as plt
 from collections import Counter
 import numpy as np
 
+def error_classification(target, result, nclasses=5, save_as=''):
+  error = [[] for i in range(nclasses)]
+  for i in xrange(len(target)):
+    err = (target[i] == result[i])
+    error[target[i]].append(err)
 
-def error_boxplot(target, result, nclasses=5, axis_argv=['Error','Stars','Error'], save_as=''):
-  """
-  Plots a boxplot of the error between the result and the target.
+  aggerror = {}
+  for i in range(nclasses):
+    aggerror[i+1] = float(sum(error[i])) / len(error[i])
   
-  :type target: dict(ReviewID: Rating)
-  :param target: is a dictionnary of (ReviewID,Rating) pairs
-
-  :type result: dict(ReviewID: Rating)
-  :param result: dictionnary of (ReviewID,PredictedRating) pairs
-  
-  :type nclasses: int
-  :param nclasses: total number of different values taken by Ratings in the different entries of target ( DEFAULT = 5)
-  
-  :type axis_argv: list(String)
-  :param axis_argv: list of parameters for the plot (axis_argv[0] -> title, axis_argv[1] -> xlabel, axis_argv[2] ->ylabel)
-  
-  :type save_as: string
-  :param save_as: file in which the figure should be saved. Leave empty if you just want to plot the result.
-  """
-  error = [ [] for i in range(nclasses) ] 
-
-  # Computing the error
-  for key in target.keys():
-    error[ target[key] - 1 ].append(target[key] - result[key])
-
-  # Plotting the result
-  fig = plt.figure()
-  plot = fig.add_subplot(111)
-  pylab.boxplot(error)
-  fig.suptitle( axis_argv[0] , fontsize=20)
-  plt.xlabel( axis_argv[1] , fontsize = 16)
-  plt.ylabel( axis_argv[2] , fontsize = 16)
-  plot.tick_params(axis='both', which='major', labelsize=14)
-  plot.tick_params(axis='both', which='minor', labelsize=8)
-  
-  # Save options
-  if save_as =='':
-    plt.show()
-  else :
-    fig.savefig(save_as)
-
+  return aggerror
 
 def error_classification_matrix(target, result, nclasses=5, save_as=''):
   """
@@ -99,6 +68,35 @@ def error_classification_matrix(target, result, nclasses=5, save_as=''):
   plt.xlabel('Predicted')
   plt.ylabel('Target')
   plt.yticks(range(nclasses), range(nclasses))
+  
+  # Save options
+  if save_as =='':
+    plt.show()
+  else :
+    fig.savefig(save_as)
+
+def prob_dispersion(target, result, prob, nclasses=5, save_as=''):
+  classprob = [[] for i in 2 * range(nclasses)]
+  for i in xrange(len(result)):
+    p = prob[i][result[i]]
+    if result[i] == target[i]:
+      classprob[2*result[i]].append(p)
+    else:
+      classprob[2*result[i] + 1].append(p)
+
+  xlabels = [[str(i+1) + "-Good", str(i+1) + "-Bad"] for i in range(nclasses)]
+  xlabels = reduce(list.__add__, xlabels, [])
+
+  # Plotting the result
+  fig = plt.figure()
+  fig.suptitle('Probability distribution' , fontsize=20)
+  plot = fig.add_subplot(111)
+  pylab.boxplot(classprob)
+  pylab.xticks(range(1, 2 * nclasses + 1), xlabels)
+  plot.set_xlabel('Predicted' , fontsize = 16)
+  plot.set_ylabel('Probabilities' , fontsize = 16)
+  plot.tick_params(axis='both', which='major', labelsize=14)
+  plot.tick_params(axis='both', which='minor', labelsize=8)
   
   # Save options
   if save_as =='':

@@ -2,6 +2,15 @@ from utils import data
 from utils.tokenizer import Tokenizer
 import json
 
+def generateYelpSentenceExample(filename):
+  tok = Tokenizer(preserve_case=False)
+  # extracting tokens
+  for line in data.generateLine(filename):
+    review = json.loads(line)
+    tokens = tok.sentence_tokenize(review['text'])
+    stars = int(review['stars'])
+    yield tokens, stars
+
 def generateYelpExample(filename):
   tok = Tokenizer(preserve_case=False)
   # extracting tokens

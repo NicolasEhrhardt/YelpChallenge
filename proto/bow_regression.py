@@ -1,6 +1,5 @@
 # Tools
 from collections import Counter
-import math
 from utils import data
 
 # generating reviews
@@ -10,29 +9,37 @@ from generator import generateYelpExample
 from gensim import corpora
 from gensim.models import tfidfmodel
 
+# SGD 
+from sklearn import linear_model
+from sklearn.metrics import mean_squared_error
+import numpy as np
+from scipy.sparse import csr_matrix
+
 root = data.getParent(__file__)
 
 # yelp data
-dataset_train_filename = root + "/dataset/yelp_academic_dataset_review_training.json"
+dataset_train_filename = root + '/dataset/yelp_academic_dataset_review_training.json'
+dataset_test_filename = root + '/dataset/holdout/yelp_academic_dataset_review_holdout.json'
 
-corpus_filename = '/tmp/yelp_proto_corpustrain.mm'
-dict_filename = '/tmp/yelp_proto_corpustrain.dict'
-tfidf_filename = '/tmp/yelp_proto_tfidf.model'
-weights_filename = '/tmp/yelp_proto_weights.counter'
+corpus_filename = root + '/computed/corpustrain.mm'
+dict_filename = root + '/computed/corpustrain.dict'
+tfidf_filename = root + '/computed/tfidf.model'
+lin_reg_filename = root + '/computed/proto_tfidf_regul_lin_reg.model'
+weights_filename = root + '/computed/proto_tfidf_regul_weights.counter'
+file_csr_train = root + '/computed/proto_tfidf_regul_csrtrain.csr'
+file_csr_test = root + '/computed/proto_tfidf_regul_csrtest.csr'
 
+print('> Load data')
 corpus_train = corpora.MmCorpus(corpus_filename)
 dictionary_train = corpora.Dictionary.load(dict_filename)
 tfidf_model = tfidfmodel.TfidfModel.load(tfidf_filename)
 corpus_train_tfidf = tfidf_model[corpus_train]
 
-print "> Train regression"
+##################################################################
+# Distributional models for the words in the different documents #
+##################################################################
 
-def dot(csparse, c):
-  r = 0
-  for key in csparse:
-    r += csparse[key] * c[key]
-  return r
-
+# Yields a tfidf representation of the reviews in the input filename
 def generateTfidf(dataset_train_filename):
   for tokens, stars in generateYelpExample(dataset_train_filename):
     doc_tfidf = tfidf_model[dictionary_train.doc2bow(tokens)]
@@ -41,79 +48,96 @@ def generateTfidf(dataset_train_filename):
     
     yield stars, Counter(dict(doc_tfidf))
 
-def sgd(alpha=0.04, epsilon=0.01, alapcoeff=.01, nEpoch=1000):
-  weights = Counter()
+# Yields a document frequency representation of the reviews in the input filename
+def generateWordFreq(dataset_train_filename):
+    for tokens, stars in generateYelpExample(dataset_train_filename):
+        doc_wordFreq = Counter(dict( dictionary_train.doc2bow(tokens) ) )
+        if len(doc_wordFreq):
+            doc_nwords = float(sum(doc_wordFreq.values()))
+            for key in doc_wordFreq:
+                doc_wordFreq[key] /= doc_nwords
+            yield stars, doc_wordFreq;
 
-  # parameters
-  size = 0 # will be computed at first iteration
-  epoch = 0
-  bias = 0
-  alphainit = alpha
+chosenGenerator = generateTfidf
 
-  # variables
-  RMSE = 2 * epsilon
-  first = True
+#########
+# Tools #
+#########
 
-  #delta_weights = Counter()
-  #delta_bias = 0
+# Generates a scipy.sparse.csr_matrix. This will be used in the scikit-learn implementation
+# of the SGD algorithm. Hopefully improving the running speed of the algorithm
 
-  while epoch < nEpoch:
-    print("> Epoch %d" % epoch)
+def generateScipyCSRMatrix(generator, dataset_train_filename):
+    # Inputs to the scipy.sparse.csr_matrix generator
+    data = []
+    indices = []
+    indptr = []
+    target = []
 
-    # Update weights 
-    for target, doc in generateTfidf(dataset_train_filename):
-      if first:
-        size += 1
+    idoc = 0
+    idx = 0
 
-      coeff = target
-      coeff -= dot(doc, weights)
-      coeff -= bias
+    # Putting the data into the right format
+    # In the line below, change the generator to the desired model above
+    for star, doc in generator(dataset_train_filename):
+        indptr.append(idx)
+        target.append(star)
+        for key in doc:
+            data.append( doc[key] )
+            indices.append( key-1 )
+            idx += 1
 
-      #old_delta_weights = copy(weights)
-      #old_delta_bias = coeff
-      for token in doc:
-        weights[token] += alpha * coeff * doc[token]
-        #delta_weights[token] = coeff * TFIDF[review][token]
+        idoc += 1
         
-      #for w in weights:
-      #  if math.isnan(weights[w]):
-      #    print "n"
+    indptr.append(idx)
 
-      # Constant term
-      bias += alpha * coeff
-      #delta_bias = coeff
+    data = np.array(data)
+    indices = np.array(indices)
+    indptr = np.array(indptr)
+    target = np.array(target)
 
-      #if alapcoeff:
-        #alpha = alpha * (1 + alapcoeff * (delta_bias * old_delta_bias + dot(old_delta_weights, delta_weights))) 
-    # Compute the approximation error
+    # generating csr matrix
+    csr_train = csr_matrix( (data, indices, indptr), shape = (idoc, max(indices)+1 ) )
+    return (csr_train,target)
 
-    error = 0.
-    for target, doc in generateTfidf(dataset_train_filename):
-      errori = target
-      errori -= dot(doc, weights)
-      errori -= bias
+###########
+# Process #
+###########
 
-      error += errori ** 2.0
+print('> Generating training matrix ')
+X_train, Y_train = generateScipyCSRMatrix(chosenGenerator, dataset_train_filename)
+data.save((X_train, Y_train), file_csr_train);
+print('> Generating test matrix ')
+X_test, Y_test = generateScipyCSRMatrix(chosenGenerator, dataset_test_filename)
+data.save((X_test, Y_test), file_csr_test);
 
-    epoch += 1
-    
-    RMSE_old = RMSE
-    RMSE = error / size
-    RMSE_delta = (RMSE_old - RMSE)
+# fitting the linear regression model
+print('> Fitting the model ')
+# Actually performing the linear regression
+alpha_opt_word_freq = 70.
+lin_reg_model = linear_model.SGDRegressor(
+  eta0=0.04, # starting learning rate
+  n_iter=300, # max number of epochs
+  shuffle=True, 
+  verbose=0, 
+  alpha=0.000000, # regularization constant
+);
 
-    if first:
-      first = False
-    else:
-      alpha = alphainit / math.sqrt(epoch)
+lin_reg_model.fit(X_train, Y_train)
+coeffs = lin_reg_model.coef_ # coefficients of the linear regression
 
-    print('Error = %f \nAlpha = %f \nImprovement = %f' % (RMSE, alpha, RMSE_delta))
-    
-    if abs(RMSE_delta) < epsilon:
-      break
+print('> Predicting')
+Y_pred_train = lin_reg_model.predict(X_train)
+Y_pred_test = lin_reg_model.predict(X_test)
+RMSE_train = mean_squared_error( Y_train, Y_pred_train )
+RMSE_test = mean_squared_error( Y_test, Y_pred_test )
+print('- RMSE: Training: %f, Test: %f' % (RMSE_train, RMSE_test))
 
-  return weights
+# converting the coefficients to the weights format required by proto_model (matlab matrix indexes start at 1...)
+weights = Counter()
+for i in xrange( len(coeffs) ):
+    weights[i+1] = coeffs[i]
 
-weights = sgd()
+# A good scientist always save his dataset
+data.save(lin_reg_model, lin_reg_filename)
 data.save(weights, weights_filename)
-
-print "Done"
