@@ -1,4 +1,5 @@
-from plot import error_boxplot, error_classification_matrix
+from regression import error_boxplot
+from classification import error_classification_matrix
 from pylab import *
 
 #################
