@@ -26,7 +26,7 @@ def error_boxplot(target, result, nclasses=5, axis_argv=['Error','Stars','Error'
   error = [ [] for i in range(nclasses) ] 
 
   # Computing the error
-  for key in target.keys():
+  for key in xrange(len(target)):
     error[ target[key] - 1 ].append(target[key] - result[key])
 
   # Plotting the result
@@ -99,6 +99,35 @@ def error_classification_matrix(target, result, nclasses=5, save_as=''):
   plt.xlabel('Predicted')
   plt.ylabel('Target')
   plt.yticks(range(nclasses), range(nclasses))
+  
+  # Save options
+  if save_as =='':
+    plt.show()
+  else :
+    fig.savefig(save_as)
+
+def prob_dispersion(target, result, prob, nclasses=5, save_as=''):
+  classprob = [[] for i in 2 * range(nclasses)]
+  for i in xrange(len(result)):
+    p = prob[i][result[i]]
+    if result[i] == target[i]:
+      classprob[2*result[i]].append(p)
+    else:
+      classprob[2*result[i] + 1].append(p)
+
+  xlabels = [[str(i+1) + "-Good", str(i+1) + "-Bad"] for i in range(nclasses)]
+  xlabels = reduce(list.__add__, xlabels, [])
+
+  # Plotting the result
+  fig = plt.figure()
+  fig.suptitle('Probability distribution' , fontsize=20)
+  plot = fig.add_subplot(111)
+  pylab.boxplot(classprob)
+  pylab.xticks(range(1, 2 * nclasses + 1), xlabels)
+  plot.set_xlabel('Predicted' , fontsize = 16)
+  plot.set_ylabel('Probabilities' , fontsize = 16)
+  plot.tick_params(axis='both', which='major', labelsize=14)
+  plot.tick_params(axis='both', which='minor', labelsize=8)
   
   # Save options
   if save_as =='':
