@@ -19,6 +19,7 @@ root = data.getParent(__file__)
 
 # yelp data
 dataset_train_filename = root + '/dataset/yelp_academic_dataset_review_training.json'
+dataset_test_filename = root + '/dataset/holdout/yelp_academic_dataset_review_holdout.json'
 
 corpus_filename = root + '/computed/corpustrain.mm'
 dict_filename = root + '/computed/corpustrain.dict'
@@ -26,6 +27,7 @@ tfidf_filename = root + '/computed/tfidf.model'
 lin_reg_filename = root + '/computed/proto_tfidf_regul_lin_reg.model'
 weights_filename = root + '/computed/proto_tfidf_regul_weights.counter'
 file_csr_train = root + '/computed/proto_tfidf_regul_csrtrain.csr'
+file_csr_test = root + '/computed/proto_tfidf_regul_csrtest.csr'
 
 print('> Load data')
 corpus_train = corpora.MmCorpus(corpus_filename)
@@ -104,7 +106,10 @@ def generateScipyCSRMatrix(generator, dataset_train_filename):
 
 print('> Generating training matrix ')
 X_train, Y_train = generateScipyCSRMatrix(chosenGenerator, dataset_train_filename)
-data.save((X_train,Y_train), file_csr_train);
+data.save((X_train, Y_train), file_csr_train);
+print('> Generating test matrix ')
+X_test, Y_test = generateScipyCSRMatrix(chosenGenerator, dataset_test_filename)
+data.save((X_test, Y_test), file_csr_test);
 
 # fitting the linear regression model
 print('> Fitting the model ')
@@ -115,16 +120,18 @@ lin_reg_model = linear_model.SGDRegressor(
   n_iter=300, # max number of epochs
   shuffle=True, 
   verbose=0, 
-  alpha=0.000001, # regularization constant
+  alpha=0.000000, # regularization constant
 );
 
 lin_reg_model.fit(X_train, Y_train)
 coeffs = lin_reg_model.coef_ # coefficients of the linear regression
 
-print('> Predict on train set')
-Y_pred = lin_reg_model.predict(X_train)
-RMSE = mean_squared_error( Y_train, Y_pred )
-print('- Training RMSE : ' + str( RMSE ) );
+print('> Predicting')
+Y_pred_train = lin_reg_model.predict(X_train)
+Y_pred_test = lin_reg_model.predict(X_test)
+RMSE_train = mean_squared_error( Y_train, Y_pred_train )
+RMSE_test = mean_squared_error( Y_test, Y_pred_test )
+print('- RMSE: Training: %f, Test: %f' % (RMSE_train, RMSE_test))
 
 # converting the coefficients to the weights format required by proto_model (matlab matrix indexes start at 1...)
 weights = Counter()
