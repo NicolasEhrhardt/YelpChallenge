@@ -13,7 +13,9 @@ import numpy as np
 
 root = data.getParent(__file__)
 
-training_filename = root + '/computed/prototypes_tfidf.pkl.gz'
+training_filename = root + '/computed/prototypes_sentence_cos_noregul_tfidf.pkl.gz'
+bestweights_filename = root + '/computed/proto_final_sentence_cos_noregul_tfidf.pkl.gz'
+nunits = 55
 
 train, valid, test = data.load(training_filename)
 
@@ -21,11 +23,11 @@ X_train, Y_train = train
 X_valid, Y_valid = valid
 X_test, Y_test = test
 
-net = buildNetwork(50, 50, 5, bias=True, hiddenclass=TanhLayer, outclass=SoftmaxLayer, fast=True)
+net = buildNetwork(nunits, nunits, 5, bias=True, hiddenclass=TanhLayer, outclass=SoftmaxLayer, fast=True)
 # fast requires arac which is a pain in the butt to install but doable
 
 def createDataset(X, Y):
-  ds = ClassificationDataSet(50, 1, nb_classes=5)
+  ds = ClassificationDataSet(nunits, 1, nb_classes=5)
   ds.setField('input', X)
   ds.setField('target', np.asmatrix(Y).T)
   ds._convertToOneOfMany()
@@ -40,7 +42,7 @@ trainer = BackpropTrainer(net, trainingData) #, verbose=True)
 
 maxEpochs = 100
 continueEpochs = 10
-convergence_threshold=10
+convergence_threshold = 10
 trainingErrors = []
 validationErrors = []
 trainer.ds = trainingData
@@ -90,7 +92,7 @@ print('> Test on holdout set')
 print(trainer.testOnData(testData))
 
 # hit this command if you want to save the weights:
-# data.save(bestweights, root + 'computed/bestweights.plk.gz')
+data.save(bestweights, bestweights_filename)
 predict = np.array([np.argmax(net.activate(x)) for x, _ in testData])
 realerr = float(sum(np.equal(predict, Y_test)))/len(predict)
 print('> Error on test set %f' % realerr)

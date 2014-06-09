@@ -117,6 +117,10 @@ regex_strings = (
     |
     (?:\.{1,})                     # Ellipsis dots. was removed
     |
+    (?:\?{1,})                     # Ellipsis question mark. was removed
+    |
+    (?:\!{1,})                     # Ellipsis exclamation point. was removed
+    |
     (?:\S)                         # Everything else that isn't whitespace.
     """
     )
@@ -125,6 +129,7 @@ regex_strings = (
 # This is the core tokenizing regex:
     
 word_re = re.compile(r"""(%s)""" % "|".join(regex_strings), re.VERBOSE | re.I | re.UNICODE)
+sentence_end_re = re.compile(r"[!.?]")
 
 # The emoticon string gets its own regex so that we can preserve case for them as needed:
 emoticon_re = re.compile(regex_strings[1], re.VERBOSE | re.I | re.UNICODE)
@@ -163,6 +168,16 @@ class Tokenizer:
             words = map((lambda x : x if emoticon_re.search(x) else x.lower()), words)
         return words
 
+    def sentence_tokenize(self, s):
+      ordered_tokens = self.tokenize(s)
+      sentences = [[]]
+      for tok in ordered_tokens:
+          sentences[-1].append(tok)
+          if sentence_end_re.match(tok):
+              sentences.append([tok])
+      
+      return sentences
+
     def ngrams(self, s, min_ngram, max_ngram, string=False):
         tokens = self.tokenize(s)
 
@@ -176,25 +191,6 @@ class Tokenizer:
                   result.append(" ".join(tokens[i:j]))
 
         return result
-
-    def tokenize_random_tweet(self):
-        """
-        If the twitter library is installed and a twitter connection
-        can be established, then tokenize a random tweet.
-        """
-        try:
-            import twitter
-        except ImportError:
-            print "Apologies. The random tweet functionality requires the Python twitter library: http://code.google.com/p/python-twitter/"
-        from random import shuffle
-        api = twitter.Api()
-        tweets = api.GetPublicTimeline()
-        if tweets:
-            for tweet in tweets:
-                if tweet.user.lang == 'en':            
-                    return self.tokenize(tweet.text)
-        else:
-            raise Exception("Apologies. I couldn't get Twitter to give me a public English-language tweet. Perhaps try again")
 
     def __reduce_length(self, s):
         s = repetition_char_re.sub(r"\1\1\1", s)
@@ -237,7 +233,14 @@ if __name__ == '__main__':
         u"HTML entities &amp; other Web oddities can be an &aacute;cute <em class='grumpy'>pain</em> >:(",
         u"HTML entities &amp; other Web oddities. This is a test. it can be an &aacute;cute <em class='grumpy'>pain</em> >:(",
         u"It's perhaps noteworthy that phone numbers like +1 (800) 123-4567, (800) 123-4567, and 123-4567 are treated as words despite their whitespace.",
-        u"Waiiiiiiit a second!"
+        u"Waiiiiiiit a second!",
+        u"This is a first sentence!!! HEllo there :). Youhouuu.",
+        )
+
+    samples_sentences = (
+        u"This is a first sentence!!! HEllo there :). Youhouuu.",
+        u"This is a second sentence... HEllo there :). Youhouuu...",
+        u"Last test???! Hopefully!! HEllo there :). Youhouuu...",
         )
 
     for s in samples:
@@ -245,3 +248,10 @@ if __name__ == '__main__':
         print s
         tokenized = tok.tokenize(s)
         print "\n".join(tokenized)
+    
+    for s in samples_sentences:
+        print "======================================================================"
+        print s
+        tokenized = tok.sentence_tokenize(s)
+        for sentence in tokenized:
+            print " | ".join(sentence)

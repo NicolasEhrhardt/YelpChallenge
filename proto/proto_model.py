@@ -1,8 +1,9 @@
 # Tools
 from utils import data
+import itertools
 
 # generating reviews
-from generator import generateYelpExample
+from generator import generateYelpSentenceExample
 
 # parsing
 from gensim import corpora
@@ -10,6 +11,7 @@ from gensim.models import tfidfmodel
 
 # vectors libs
 from scipy import io
+from scipy.spatial.distance import cosine
 import numpy as np
 
 root = data.getParent(__file__)
@@ -24,8 +26,8 @@ dataset_holdout_filename = root + "/dataset/holdout/yelp_academic_dataset_review
 corpus_filename = root + '/computed/corpustrain.mm'
 dict_filename = root + '/computed/corpustrain.dict'
 tfidf_filename = root + '/computed/tfidf.model'
-weights_filename = root + '/computed/proto_tfidf_regul_weights.counter'
-training_filename = root + '/computed/prototypes_regul_tfidf.pkl.gz'
+weights_filename = root + '/computed/proto_tfidf_noregul_weights.counter'
+training_filename = root + '/computed/prototypes_sentence_cos_noregul_tfidf.pkl.gz'
 
 corpus_train = corpora.MmCorpus(corpus_filename)
 dictionary_train = corpora.Dictionary.load(dict_filename)
@@ -37,25 +39,47 @@ weights = data.load(weights_filename)
 wordreps = io.loadmat(wordrep_filename)
 prototypes = wordreps['We']
 
+numbercosines = 5
+
 def getValues(weights, filename):
   X = []
   Y = []
   leftouts = 0
 
-  for tokens, stars in generateYelpExample(filename):
-    doc = dictionary_train.doc2bow(tokens)
-    if not len(doc):
+  for sentence_tokens, stars in generateYelpSentenceExample(filename):
+    sentence_proto = []
+    sentence_weights = []
+
+    for tokens in sentence_tokens:
+      doc = dictionary_train.doc2bow(tokens)
+      if len(doc) == 0:
+        continue
+      
+      tokenids, freq = zip(*doc)
+      w = [weights[tokenid] for tokenid in tokenids]
+      tot = sum(w)
+      w = [v / tot for v in w]
+      # weight are already normalized at this point
+      current_proto = np.multiply(prototypes[:, tokenids], w).sum(axis=1) 
+      assert(len(current_proto) == 50)
+      sentence_weights.append(tot)
+      sentence_proto.append(current_proto)
+    
+    if len(sentence_proto) == 0:
       leftouts += 1
       continue
-    
-    tokenids, freq = zip(*doc)
-    w = [weights[tokenid] for tokenid in tokenids]
-    tot = sum(w)
-    w = [v / tot for v in w]
-    # weight are already normalized at this point
 
-    doc_proto = np.multiply(prototypes[:, tokenids], w).sum(axis=1)
-    assert(len(doc_proto) == 50)
+    pairs = itertools.combinations(sentence_proto, 2)
+    dist = [0]*numbercosines
+    for v1, v2 in pairs:
+      dist.append(cosine(v1, v2))
+    dist.sort(reverse=True)
+
+    tot = sum(sentence_weights)
+    w = [v / tot for v in sentence_weights]
+    doc_proto = np.multiply(np.transpose(sentence_proto), w).sum(axis=1)
+    doc_proto = np.append(doc_proto, dist[0: numbercosines])
+    assert(len(doc_proto) == 50 + numbercosines)
     X.append([doc_proto])
     # change range for classification
     Y.append(stars-1)
