@@ -2,9 +2,18 @@ from utils import data
 from pybrain.tools.validation import ModuleValidator
 import json
 import copy
-
+import numpy as np
 
 root = data.getParent(__file__)
+
+def classification_error_metric(distr,star):
+    classes = np.array( range(5) )
+    distr = np.array(distr)
+    mean_error = classes * distr
+    return mean_error
+
+def regression_metric(y_pred, star):
+    return y_pred-star;
 
 """
     Returns a dictionnary with the following properties
@@ -13,11 +22,11 @@ root = data.getParent(__file__)
     res[key] = sorted list of tuples list_tuples
     list_tuples = ( error in this review, review idx in the holdout set of reviews)
 """
-def get_regression_segregation():
+def get_segregation(
+        file_path= "/computed/sentence_analysis_reg.pkl.gz",
+        error_metric = regression_metric):
 
     # Loading necessary data.
-    file_path = "/computed/sentence_analysis_reg.pkl.gz"
-
     best_module, testData, Y_test = data.load( root + file_path )
     n_samples = len(Y_test)
 
@@ -25,7 +34,7 @@ def get_regression_segregation():
     Y_pred = ModuleValidator.calculateModuleOutput(best_module, testData)
     
     
-    error = [ Y_pred[i] - Y_test[i] for i in xrange(n_samples) ]
+    error = [ error_metric(Y_pred[i],Y_test[i]) for i in xrange(n_samples) ]
     err_and_revidx = zip( error, range(n_samples) )
 
     sorted_err = {0:[], 1:[], 2:[], 3:[], 4:[]}
@@ -36,6 +45,7 @@ def get_regression_segregation():
         sorted_err[idx] = sorted( sorted_err[idx] )
  
     return sorted_err
+
 
 
 """
@@ -56,11 +66,11 @@ def get_stars_and_review():
     
     return star_and_review;
 
-segregated_reviews = get_regression_segregation()
+segregated_reviews = get_segregation()
 star_and_review = get_stars_and_review()
 
 # We analyzed the reviews on which the model gives the biggest positive error, the biggest negative error and the smallest absolute error.
-    reviews_analysis = { "pos": {0:[], 1:[], 2:[], 3:[], 4:[] },
+reviews_analysis = { "pos": {0:[], 1:[], 2:[], 3:[], 4:[] },
                      "abs": {0:[], 1:[], 2:[], 3:[], 4:[] },
                      "neg": {0:[], 1:[], 2:[], 3:[], 4:[] } }
 
