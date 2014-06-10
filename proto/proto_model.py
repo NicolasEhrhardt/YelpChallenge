@@ -106,15 +106,16 @@ X_holdout = np.concatenate(X_holdout, axis=0)
 Y_holdout = np.array(Y_holdout)
 assert(X_holdout.shape[0] == len(Y_holdout))
 
-permut = np.random.permutation(len(Y_holdout))
+# permut = np.random.permutation(len(Y_holdout))
+permut = range(len(Y_holdout));
 print("- Create valid set")
-X_valid = X_holdout[permut[0:len(permut)/2], :]
-Y_valid = Y_holdout[permut[0:len(permut)/2]]
+X_valid = X_holdout[permut[len(permut)/2::], :]
+Y_valid = Y_holdout[permut[len(permut)/2::]]
 assert(X_valid.shape[0] == len(Y_valid))
 
 print "- Create test subet"
-X_test = X_holdout[permut[len(permut)/2::], :]
-Y_test = Y_holdout[permut[len(permut)/2::]]
+X_test = X_holdout[permut[0:len(permut)/2], :]
+Y_test = Y_holdout[permut[0:len(permut)/2]]
 assert(X_test.shape[0] == len(Y_test))
 print "< Test sets created"
 
